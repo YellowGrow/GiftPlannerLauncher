@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: file: https: http: blob:; connect-src 'self' https://api.github.com https://limbusgiftplanner.pages.dev;">
+    <title>림버스 플랜 실행기</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script>
+    // 해상도 기반 스케일링 (2560x1440 기준 100%)
+    (function() {
+        var h = screen.height;
+        // 1440p: 16px, 1080p: 12px, 720p: 10px, 그 외: 9px
+        var fs = h >= 1440 ? 16 : h >= 1080 ? 12 : h >= 720 ? 10 : 9;
+        document.documentElement.style.fontSize = fs + 'px';
+    })();
+    </script>
+</head>
+<body>
+    <!-- 업데이트 알림 배너 -->
+    <div class="update-banner hidden" id="update-banner">
+        <span class="update-icon">🆕</span>
+        <span class="update-text">새 버전이 있습니다!</span>
+        <button class="update-btn" id="update-btn">업데이트</button>
+        <button class="update-close" id="update-close">✕</button>
+    </div>
+
+    <!-- 커스텀 타이틀바 -->
+    <div class="title-bar">
+        <div class="title-bar-drag">
+            <span class="app-title" id="appTitle">림버스 플랜 실행기</span>
+        </div>
+        <div class="title-bar-controls">
+            <button class="title-btn" id="reset-selection-btn" title="선택 초기화">🔄</button>
+            <button class="title-btn" id="reset-position-btn" title="원래 자리로">⟲</button>
+            <button class="title-btn" id="settings-btn" title="설정">⚙</button>
+            <button class="title-btn" id="minimize-btn" title="최소화">─</button>
+            <button class="title-btn close-btn" id="close-btn" title="닫기">✕</button>
+        </div>
+    </div>
+
+    <!-- 설정 패널 (오버레이) -->
+    <div class="settings-panel hidden" id="settings-panel">
+        <div class="setting-group">
+            <label>표시 모드</label>
+            <div class="view-mode-buttons">
+                <button class="view-mode-btn" id="view-mode-name" data-mode="name">이름만</button>
+                <button class="view-mode-btn" id="view-mode-image" data-mode="image">이미지만</button>
+            </div>
+        </div>
+        <div class="setting-group">
+            <label>투명도</label>
+            <div class="slider-container">
+                <input type="range" id="opacity-slider" min="20" max="100" value="100">
+                <span id="opacity-value">100%</span>
+            </div>
+        </div>
+        <div class="setting-group">
+            <label>
+                <input type="checkbox" id="always-on-top-check">
+                항상 맨 위에 표시
+            </label>
+        </div>
+        <div class="setting-group">
+            <label>
+                <input type="checkbox" id="click-through-check">
+                클릭 무시 (뒤 창 클릭 가능)
+            </label>
+        </div>
+        <div class="setting-group">
+            <label>
+                <input type="checkbox" id="lock-window-check">
+                창 위치/크기 고정
+            </label>
+        </div>
+    </div>
+
+    <!-- 초기화 확인 모달 -->
+    <div class="confirm-modal hidden" id="confirm-reset-modal">
+        <div class="confirm-modal-content">
+            <p>정말 모든 선택을 초기화하시겠습니까?</p>
+            <div class="confirm-modal-buttons">
+                <button class="btn-confirm" id="confirm-reset-yes">예</button>
+                <button class="btn-cancel" id="confirm-reset-no">아니오</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 플랜 없음 화면 -->
+    <div class="no-plan-view" id="no-plan-view">
+        <div class="no-plan-content">
+            <div class="version-info" id="version-info">v1.0.2</div>
+            <span class="no-plan-icon">📋</span>
+            <h2>플랜을 불러오세요</h2>
+            <p>웹사이트에서 플랜을 만들고<br>실행 버튼을 눌러주세요</p>
+            <button class="btn-primary" id="goto-site-btn">🌐 사이트로 이동</button>
+        </div>
+    </div>
+
+    <!-- 플랜 실행 화면 -->
+    <div class="plan-view hidden" id="plan-view">
+        <!-- 플랜 헤더 -->
+        <div class="exec-header">
+            <h1 id="planName">플랜 이름</h1>
+            <span class="difficulty normal" id="planDifficulty">NORMAL</span>
+            <div class="plan-description" id="planDescription"></div>
+        </div>
+
+        <!-- 획득 순서 섹션 -->
+        <div class="section acquisition-order-section">
+            <div class="section-title">기프트 획득 순서</div>
+            <div class="acquisition-order-content" id="acquisitionOrderContent">
+                <div class="empty-message">획득 순서가 없습니다</div>
+            </div>
+        </div>
+
+        <!-- 현재 층 목표 섹션 -->
+        <div class="section floor-section">
+            <div class="section-title">현재 층 목표</div>
+            <div class="floor-navigation">
+                <button class="floor-nav-btn" id="prevFloorBtn">◀</button>
+                <span class="floor-indicator" id="floorIndicator">시작 기프트</span>
+                <button class="floor-nav-btn" id="nextFloorBtn">▶</button>
+            </div>
+            <div class="floor-content" id="floorContent">
+                <!-- 동적으로 변경됨 -->
+            </div>
+        </div>
+
+        <!-- 전체 기프트 목록 -->
+        <div class="section all-gifts-section">
+            <div class="section-title">전체 기프트 목록</div>
+            <div class="filter-controls">
+                <div class="search-row">
+                    <input type="text" class="search-input" id="giftSearchInput" placeholder="기프트 검색...">
+                </div>
+                <div class="filter-row">
+                    <div class="keyword-filters">
+                        <button class="filter-btn" data-keyword="화상">화상</button>
+                        <button class="filter-btn" data-keyword="출혈">출혈</button>
+                        <button class="filter-btn" data-keyword="진동">진동</button>
+                        <button class="filter-btn" data-keyword="파열">파열</button>
+                        <button class="filter-btn" data-keyword="침잠">침잠</button>
+                        <button class="filter-btn" data-keyword="호흡">호흡</button>
+                        <button class="filter-btn" data-keyword="충전">충전</button>
+                        <button class="filter-btn" data-keyword="참격">참격</button>
+                        <button class="filter-btn" data-keyword="관통">관통</button>
+                        <button class="filter-btn" data-keyword="타격">타격</button>
+                        <button class="filter-btn" data-keyword="범용">범용</button>
+                    </div>
+                    <div class="tier-filters">
+                        <button class="tier-quick-btn" data-tier="1">I</button>
+                        <button class="tier-quick-btn" data-tier="2">II</button>
+                        <button class="tier-quick-btn" data-tier="3">III</button>
+                        <button class="tier-quick-btn" data-tier="4">IV</button>
+                        <button class="tier-quick-btn" data-tier="5">V</button>
+                        <button class="tier-quick-btn" data-tier="EX">EX</button>
+                    </div>
+                </div>
+            </div>
+            <div class="gifts-grid" id="allGiftsGrid">
+                <!-- 동적으로 생성됨 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>

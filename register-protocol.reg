@@ -1,0 +1,12 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Classes\limbus-planner]
+@="URL:Limbus Planner Protocol"
+"URL Protocol"=""
+
+[HKEY_CURRENT_USER\Software\Classes\limbus-planner\shell]
+
+[HKEY_CURRENT_USER\Software\Classes\limbus-planner\shell\open]
+
+[HKEY_CURRENT_USER\Software\Classes\limbus-planner\shell\open\command]
+@="\"C:\\LimbusGiftPlanner\\electron-app\\node_modules\\electron\\dist\\electron.exe\" \"C:\\LimbusGiftPlanner\\electron-app\" \"%1\""
