@@ -233,8 +233,8 @@ function createWindow() {
     mainWindow = null;
   });
 
-  // 개발자 도구 (디버깅용)
-  mainWindow.webContents.openDevTools();
+  // 개발자 도구 (디버깅용) - 배포 시 비활성화
+  // mainWindow.webContents.openDevTools();
 }
 
 // 트레이 아이콘 생성
