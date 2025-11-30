@@ -63,7 +63,7 @@ function getPackImageUrl(image) {
 }
 
 // 현재 앱 버전
-const APP_VERSION = '1.0.2';
+const APP_VERSION = '1.0.3';
 const GITHUB_RELEASES_API = 'https://api.github.com/repos/YellowGrow/GiftPlannerLauncher/releases/latest';
 const GITHUB_RELEASES_PAGE = 'https://github.com/YellowGrow/GiftPlannerLauncher/releases/latest';
 
