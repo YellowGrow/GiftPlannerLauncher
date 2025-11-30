@@ -63,9 +63,9 @@ function getPackImageUrl(image) {
 }
 
 // 현재 앱 버전
-const APP_VERSION = '1.0.3';
+const APP_VERSION = '1.0.4';
 const GITHUB_RELEASES_API = 'https://api.github.com/repos/YellowGrow/GiftPlannerLauncher/releases/latest';
-const GITHUB_RELEASES_PAGE = 'https://github.com/YellowGrow/GiftPlannerLauncher/releases/latest';
+const UPDATE_DOWNLOAD_PAGE = 'https://limbusgiftplanner.pages.dev/#download';
 
 // =====================
 // UI 초기화
@@ -136,7 +136,7 @@ function showUpdateBanner(newVersion) {
     // 업데이트 버튼 클릭
     document.getElementById('update-btn').addEventListener('click', () => {
         if (window.electronAPI) {
-            window.electronAPI.openExternal(GITHUB_RELEASES_PAGE);
+            window.electronAPI.openExternal(UPDATE_DOWNLOAD_PAGE);
         }
     });
     
@@ -466,19 +466,28 @@ function generateStartingGiftsHTML() {
         return '<div class="empty-message">시작 기프트가 없습니다</div>';
     }
     
-    let html = '<div class="floor-gifts-container">';
+    let html = '';
     
-    // 시작 기프트
-    startingGifts.forEach(gift => {
-        html += createGiftCardHTML(gift, false, true);
-    });
+    // 시작 기프트 섹션
+    if (startingGifts.length > 0) {
+        html += '<div class="section-title" style="font-size: 0.8em; margin-bottom: 6px; color: #888;">시작 기프트</div>';
+        html += '<div class="floor-gifts-container">';
+        startingGifts.forEach(gift => {
+            html += createGiftCardHTML(gift, false, true);
+        });
+        html += '</div>';
+    }
     
-    // 일반 목표 기프트
-    generalGifts.forEach(gift => {
-        html += createGiftCardHTML(gift, false, true);
-    });
+    // 일반 목표 기프트 섹션 (분리)
+    if (generalGifts.length > 0) {
+        html += '<div class="section-title" style="font-size: 0.8em; margin: 12px 0 6px 0; color: #888;">일반 목표 기프트</div>';
+        html += '<div class="floor-gifts-container">';
+        generalGifts.forEach(gift => {
+            html += createGiftCardHTML(gift, false, true);
+        });
+        html += '</div>';
+    }
     
-    html += '</div>';
     return html;
 }
 
