@@ -462,32 +462,18 @@ function updateFloorDisplay() {
 }
 
 function generateStartingGiftsHTML() {
-    if (startingGifts.length === 0 && generalGifts.length === 0) {
+    if (startingGifts.length === 0) {
         return '<div class="empty-message">시작 기프트가 없습니다</div>';
     }
     
-    let html = '';
+    let html = '<div class="floor-gifts-container">';
     
-    // 시작 기프트 섹션
-    if (startingGifts.length > 0) {
-        html += '<div class="section-title" style="font-size: 0.8em; margin-bottom: 6px; color: #888;">시작 기프트</div>';
-        html += '<div class="floor-gifts-container">';
-        startingGifts.forEach(gift => {
-            html += createGiftCardHTML(gift, false, true);
-        });
-        html += '</div>';
-    }
+    // 시작 기프트만 표시
+    startingGifts.forEach(gift => {
+        html += createGiftCardHTML(gift, false, true);
+    });
     
-    // 일반 목표 기프트 섹션 (분리)
-    if (generalGifts.length > 0) {
-        html += '<div class="section-title" style="font-size: 0.8em; margin: 12px 0 6px 0; color: #888;">일반 목표 기프트</div>';
-        html += '<div class="floor-gifts-container">';
-        generalGifts.forEach(gift => {
-            html += createGiftCardHTML(gift, false, true);
-        });
-        html += '</div>';
-    }
-    
+    html += '</div>';
     return html;
 }
 
