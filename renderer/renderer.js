@@ -39,6 +39,34 @@ function getRomanNumeral(tier) {
     return numerals[tier] || tier || '';
 }
 
+// HTML 이스케이프 함수
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// 플랜 설명 펼치기/접기
+function togglePlanDescription() {
+    const toggle = document.querySelector('.description-toggle');
+    const content = document.querySelector('.description-content');
+    if (toggle && content) {
+        toggle.classList.toggle('expanded');
+        content.classList.toggle('expanded');
+    }
+}
+
+// 층 설명 펼치기/접기
+function toggleFloorMemo(btn) {
+    const wrapper = btn.closest('.floor-memo-wrapper');
+    if (wrapper) {
+        const content = wrapper.querySelector('.floor-memo-content');
+        btn.classList.toggle('expanded');
+        content.classList.toggle('expanded');
+    }
+}
+
 function getKeywordIconUrl(keyword) {
     if (!keyword || keyword === '범용') return null;
     const gimicKeywords = ['화상', '출혈', '진동', '파열', '침잠', '호흡', '충전'];
@@ -63,7 +91,7 @@ function getPackImageUrl(image) {
 }
 
 // 현재 앱 버전
-const APP_VERSION = '1.0.5';
+const APP_VERSION = '1.0.6';
 const GITHUB_RELEASES_API = 'https://api.github.com/repos/YellowGrow/GiftPlannerLauncher/releases/latest';
 const UPDATE_DOWNLOAD_PAGE = 'https://limbusgiftplanner.pages.dev/#download';
 
@@ -367,7 +395,16 @@ function loadPlan(plan) {
     
     const descEl = document.getElementById('planDescription');
     if (plan.description) {
-        descEl.textContent = plan.description;
+        // 펼치기/접기 구조로 변경
+        descEl.innerHTML = `
+            <button class="description-toggle" onclick="togglePlanDescription()">
+                <span>플랜 설명</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="description-content">
+                <div class="plan-description">${escapeHtml(plan.description)}</div>
+            </div>
+        `;
         descEl.classList.remove('hidden');
     } else {
         descEl.classList.add('hidden');
@@ -513,7 +550,15 @@ function generateFloorHTML(floor) {
     
     // 메모
     if (floor.memo) {
-        html += `<div class="floor-memo">${floor.memo}</div>`;
+        html += `<div class="floor-memo-wrapper">
+            <button class="floor-memo-toggle" onclick="toggleFloorMemo(this)">
+                <span>층 설명</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="floor-memo-content">
+                <div class="floor-memo">${escapeHtml(floor.memo)}</div>
+            </div>
+        </div>`;
     }
     
     return html;
