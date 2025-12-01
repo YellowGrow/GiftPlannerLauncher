@@ -91,7 +91,7 @@ function getPackImageUrl(image) {
 }
 
 // 현재 앱 버전
-const APP_VERSION = '1.0.6';
+const APP_VERSION = '1.0.7';
 const GITHUB_RELEASES_API = 'https://api.github.com/repos/YellowGrow/GiftPlannerLauncher/releases/latest';
 const UPDATE_DOWNLOAD_PAGE = 'https://limbusgiftplanner.pages.dev/#download';
 
