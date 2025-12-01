@@ -63,7 +63,7 @@ function getPackImageUrl(image) {
 }
 
 // 현재 앱 버전
-const APP_VERSION = '1.0.4';
+const APP_VERSION = '1.0.5';
 const GITHUB_RELEASES_API = 'https://api.github.com/repos/YellowGrow/GiftPlannerLauncher/releases/latest';
 const UPDATE_DOWNLOAD_PAGE = 'https://limbusgiftplanner.pages.dev/#download';
 
@@ -631,6 +631,15 @@ function buildSynthesisIngredientsMap(plan) {
                         synthesisIngredientsMap.set(synGift.id, synGift.ingredients);
                     }
                 });
+            }
+        });
+    }
+    
+    // 일반 목표 기프트에서 합성 기프트 재료 정보 추출
+    if (plan.generalGifts) {
+        plan.generalGifts.forEach(gift => {
+            if (gift.id && gift.ingredients && gift.ingredients.length > 0) {
+                synthesisIngredientsMap.set(gift.id, gift.ingredients);
             }
         });
     }
