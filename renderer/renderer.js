@@ -90,8 +90,8 @@ function getPackImageUrl(image) {
     return IMAGE_BASE_URL + encodeImagePath('테마팩/' + image);
 }
 
-// 현재 앱 버전
-const APP_VERSION = '1.0.7';
+// 현재 앵 버전
+const APP_VERSION = '1.0.8';
 const GITHUB_RELEASES_API = 'https://api.github.com/repos/YellowGrow/GiftPlannerLauncher/releases/latest';
 const UPDATE_DOWNLOAD_PAGE = 'https://limbusgiftplanner.pages.dev/#download';
 

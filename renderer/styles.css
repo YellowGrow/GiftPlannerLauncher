@@ -801,7 +801,7 @@ body.window-locked .title-bar-drag {
 /* 키워드 필터 버튼 */
 .filter-btn {
     padding: 0.25rem 0.5rem;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.6);
     border: none;
     border-radius: 0.25rem;
     cursor: pointer;
@@ -813,8 +813,8 @@ body.window-locked .title-bar-drag {
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0.4;
-    filter: saturate(0.5);
+    opacity: 0.55;
+    filter: saturate(0.6);
 }
 
 .filter-btn:hover {
